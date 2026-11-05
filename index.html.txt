@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Segundo Cérebro Financeiro</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            monotonal: {
+              50: '#F9FAFB',
+              100: '#F3F4F6',
+              200: '#E5E7EB',
+              300: '#D1D5DB',
+              400: '#9CA3AF',
+              500: '#6B7280',
+              600: '#4B5563',
+              700: '#374151',
+              800: '#1F2937',
+              900: '#111827',
+              950: '#090D14',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #111827;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #374151;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4B5563;
+    }
+
+    .glass-card {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body class="bg-monotonal-950 text-monotonal-100 font-sans antialiased min-h-screen flex flex-col selection:bg-monotonal-100 selection:text-monotonal-950">
+
+  <!-- TOP HEADER / NAVBAR -->
+  <header class="border-b border-monotonal-800 bg-monotonal-900/90 sticky top-0 z-40 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Brand Logo & Title -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-monotonal-100 text-monotonal-950 flex items-center justify-center font-black text-xl shadow-lg">
+            🧠
+          </div>
+          <div>
+            <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
+              SEGUNDO CÉREBRO
+              <span class="text-[10px] px-2 py-0.5 rounded bg-monotonal-800 text-monotonal-300 font-mono font-normal">FINANCEIRO</span>
+            </h1>
+            <p class="text-xs text-monotonal-400">Hub Pessoal de Conhecimento & Património</p>
+          </div>
+        </div>
+
+        <!-- Backup Controls -->
+        <div class="flex items-center space-x-2">
+          <button onclick="exportData()" title="Exportar Backup (JSON)" class="p-2 sm:px-3 sm:py-2 text-monotonal-400 hover:text-white bg-monotonal-800/50 hover:bg-monotonal-800 rounded-xl border border-monotonal-700/50 transition text-xs flex items-center gap-2">
+            <i class="fa-solid fa-download"></i>
+            <span class="hidden sm:inline">Exportar</span>
+          </button>
+          
+          <label for="importFile" title="Importar Backup" class="p-2 sm:px-3 sm:py-2 text-monotonal-400 hover:text-white bg-monotonal-800/50 hover:bg-monotonal-800 rounded-xl border border-monotonal-700/50 transition text-xs flex items-center gap-2 cursor-pointer">
+            <i class="fa-solid fa-upload"></i>
+            <span class="hidden sm:inline">Importar</span>
+          </label>
+          <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
+
+          <button onclick="resetData()" title="Resetar Dados" class="p-2 sm:px-3 sm:py-2 text-rose-400 hover:text-rose-300 bg-rose-950/30 hover:bg-rose-900/50 rounded-xl border border-rose-900/40 transition text-xs">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="bg-monotonal-900 border-b border-monotonal-800 sticky top-16 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex space-x-2 overflow-x-auto py-2">
+        <button id="tab-btn-dashboard" onclick="switchTab('dashboard')" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition whitespace-nowrap text-white bg-monotonal-800 border border-monotonal-700">
+          <i class="fa-solid fa-chart-pie text-monotonal-400"></i>
+          <span>Dashboard</span>
+        </button>
+
+        <button id="tab-btn-finance" onclick="switchTab('finance')" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition whitespace-nowrap text-monotonal-400 hover:text-white hover:bg-monotonal-800/50">
+          <i class="fa-solid fa-wallet text-monotonal-400"></i>
+          <span>Transações</span>
+        </button>
+
+        <button id="tab-btn-brain" onclick="switchTab('brain')" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition whitespace-nowrap text-monotonal-400 hover:text-white hover:bg-monotonal-800/50">
+          <i class="fa-solid fa-brain text-monotonal-400"></i>
+          <span>Segundo Cérebro</span>
+        </button>
+
+        <button id="tab-btn-habits" onclick="switchTab('habits')" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition whitespace-nowrap text-monotonal-400 hover:text-white hover:bg-monotonal-800/50">
+          <i class="fa-solid fa-bullseye text-monotonal-400"></i>
+          <span>Metas & Hábitos</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- TAB 1: DASHBOARD -->
+    <section id="tab-dashboard" class="tab-content space-y-6">
+      <!-- Metric Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-card rounded-2xl p-5 border border-monotonal-800">
+          <div class="flex items-center justify-between text-monotonal-400 mb-2">
+            <span class="text-[11px] uppercase tracking-wider font-semibold">Entradas</span>
+            <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-arrow-down-left"></i>
+            </div>
+          </div>
+          <div id="dash-income" class="text-2xl font-bold font-mono text-white">R$ 0,00</div>
+          <p class="text-[11px] text-monotonal-500 mt-2">Receitas registadas</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border border-monotonal-800">
+          <div class="flex items-center justify-between text-monotonal-400 mb-2">
+            <span class="text-[11px] uppercase tracking-wider font-semibold">Saídas</span>
+            <div class="w-7 h-7 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-arrow-up-right"></i>
+            </div>
+          </div>
+          <div id="dash-expenses" class="text-2xl font-bold font-mono text-white">R$ 0,00</div>
+          <p class="text-[11px] text-monotonal-500 mt-2">Despesas totais</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border border-monotonal-800">
+          <div class="flex items-center justify-between text-monotonal-400 mb-2">
+            <span class="text-[11px] uppercase tracking-wider font-semibold">Saldo Atual</span>
+            <div class="w-7 h-7 rounded-lg bg-monotonal-100 text-monotonal-950 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+          </div>
+          <div id="dash-balance" class="text-2xl font-bold font-mono text-white">R$ 0,00</div>
+          <p class="text-[11px] text-monotonal-500 mt-2">Entradas − Saídas</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 border border-monotonal-800">
+          <div class="flex items-center justify-between text-monotonal-400 mb-2">
+            <span class="text-[11px] uppercase tracking-wider font-semibold">Taxa de Poupança</span>
+            <div class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-xs">
+              <i class="fa-solid fa-percent"></i>
+            </div>
+          </div>
+          <div id="dash-savings-rate" class="text-2xl font-bold font-mono text-white">0%</div>
+          <p class="text-[11px] text-monotonal-500 mt-2">Percentual economizado</p>
+        </div>
+      </div>
+
+      <!-- Grid Content -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="space-y-6">
+          <div class="glass-card rounded-2xl p-6 border border-monotonal-800">
+            <h2 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+              <i class="fa-solid fa-bolt text-monotonal-400"></i> Ações Rápidas
+            </h2>
+            <div class="grid grid-cols-2 gap-3">
+              <button onclick="switchTab('finance')" class="p-3 bg-monotonal-900 hover:bg-monotonal-800 border border-monotonal-800 rounded-xl text-left transition flex items-center gap-3">
+                <i class="fa-solid fa-plus-circle text-emerald-400 text-base"></i>
+                <div>
+                  <div class="text-xs font-bold text-white">Transação</div>
+                  <div class="text-[10px] text-monotonal-400">Novo lançamento</div>
+                </div>
+              </button>
+              <button onclick="switchTab('brain'); openAddNoteModal();" class="p-3 bg-monotonal-900 hover:bg-monotonal-800 border border-monotonal-800 rounded-xl text-left transition flex items-center gap-3">
+                <i class="fa-solid fa-lightbulb text-yellow-400 text-base"></i>
+                <div>
+                  <div class="text-xs font-bold text-white">Insight</div>
+                  <div class="text-[10px] text-monotonal-400">Criar nota</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6 border border-monotonal-800">
+            <h2 class="text-sm font-bold text-white mb-4 flex items-center justify-between">
+              <span>Gastos por Categoria</span>
+            </h2>
+            <div id="dash-category-progress" class="space-y-4"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-6">
+          <div class="glass-card rounded-2xl p-6 border border-monotonal-800">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-bookmark text-monotonal-400"></i> Notas Recentes
+              </h2>
+              <button onclick="switchTab('brain')" class="text-xs text-monotonal-400 hover:text-white transition">Ver todas →</button>
+            </div>
+            <div id="dash-recent-notes" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-6 border border-monotonal-800">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-bullseye text-monotonal-400"></i> Resumo de Metas
+              </h2>
+              <button onclick="switchTab('habits')" class="text-xs text-monotonal-400 hover:text-white transition">Gerir metas →</button>
+            </div>
+            <div id="dash-goals-summary" class="space-y-3"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: TRANSAÇÕES -->
+    <section id="tab-finance" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="glass-card rounded-2xl p-6 border border-monotonal-800">
+          <h2 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-receipt text-monotonal-400"></i> Nova Transação
+          </h2>
+          <form id="form-transaction" onsubmit="handleAddTransaction(event)" class="space-y-4">
+            <div>
+              <label class="block text-[11px] font-semibold text-monotonal-400 uppercase tracking-wider mb-1">Descrição</label>
+              <input type="text" id="tx-description" required placeholder="Ex: Salário, Aluguel, Investimento X" class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-monotonal-600 focus:outline-none focus:border-monotonal-400">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-monotonal-400 uppercase tracking-wider mb-1">Valor (R$)</label>
+                <input type="number" step="0.01" min="0.01" id="tx-amount" required placeholder="0.00" class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono placeholder-monotonal-600 focus:outline-none focus:border-monotonal-400">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-monotonal-400 uppercase tracking-wider mb-1">Tipo</label>
+                <select id="tx-type" class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-monotonal-400">
+                  <option value="expense">Saída (Despesa)</option>
+                  <option value="income">Entrada (Receita)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-monotonal-400 uppercase tracking-wider mb-1">Categoria</label>
+                <select id="tx-category" class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-monotonal-400">
+                  <option value="Investimento">Investimentos</option>
+                  <option value="Conta Fixa">Conta Fixa</option>
+                  <option value="Alimentação">Alimentação</option>
+                  <option value="Lazer">Lazer</option>
+                  <option value="Outros">Outros</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-monotonal-400 uppercase tracking-wider mb-1">Data</label>
+                <input type="date" id="tx-date" required class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-monotonal-400">
+              </div>
+            </div>
+
+            <button type="submit" class="w-full bg-monotonal-100 hover:bg-white text-monotonal-950 font-bold py-2.5 rounded-xl transition text-xs shadow-md mt-2">
+              Adicionar Transação
+            </button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-2 glass-card rounded-2xl p-6 border border-monotonal-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-chart-column text-monotonal-400"></i> Distribuição de Despesas
+              </h2>
+              <span class="text-xs text-monotonal-400 font-mono" id="tx-total-expenses-label">Total: R$ 0,00</span>
+            </div>
+            <div id="finance-category-bars" class="space-y-4 my-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transactions History -->
+      <div class="glass-card rounded-2xl p-6 border border-monotonal-800">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <h2 class="text-sm font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-monotonal-400"></i> Histórico
+          </h2>
+          <div class="flex items-center space-x-3">
+            <select id="filter-tx-category" onchange="renderFinanceTab()" class="bg-monotonal-950 border border-monotonal-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none">
+              <option value="ALL">Todas Categorias</option>
+              <option value="Investimento">Investimentos</option>
+              <option value="Conta Fixa">Conta Fixa</option>
+              <option value="Alimentação">Alimentação</option>
+              <option value="Lazer">Lazer</option>
+              <option value="Outros">Outros</option>
+            </select>
+            <select id="filter-tx-type" onchange="renderFinanceTab()" class="bg-monotonal-950 border border-monotonal-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none">
+              <option value="ALL">Todos Tipos</option>
+              <option value="income">Entradas</option>
+              <option value="expense">Saídas</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="uppercase text-monotonal-400 bg-monotonal-950 border-b border-monotonal-800">
+              <tr>
+                <th class="py-3 px-4">Data</th>
+                <th class="py-3 px-4">Descrição</th>
+                <th class="py-3 px-4">Categoria</th>
+                <th class="py-3 px-4">Tipo</th>
+                <th class="py-3 px-4 text-right">Valor</th>
+                <th class="py-3 px-4 text-center">Ação</th>
+              </tr>
+            </thead>
+            <tbody id="tx-table-body" class="divide-y divide-monotonal-800/60 font-mono"></tbody>
+          </table>
+          <div id="tx-empty-state" class="hidden py-8 text-center text-monotonal-500 text-xs">
+            Nenhuma transação encontrada.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: SEGUNDO CÉREBRO -->
+    <section id="tab-brain" class="tab-content hidden space-y-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 glass-card p-4 rounded-2xl border border-monotonal-800">
+        <div class="relative w-full md:w-80">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-monotonal-500 text-xs"></i>
+          <input type="text" id="brain-search" oninput="renderBrainTab()" placeholder="Buscar notas ou tags..." class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-monotonal-600 focus:outline-none focus:border-monotonal-400">
+        </div>
+
+        <div class="flex items-center space-x-2 w-full md:w-auto overflow-x-auto">
+          <select id="brain-filter-category" onchange="renderBrainTab()" class="bg-monotonal-950 border border-monotonal-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+            <option value="ALL">Todas Categorias</option>
+            <option value="Tese de Investimento">Teses de Investimento</option>
+            <option value="Resumo de Livro">Resumos de Livros</option>
+            <option value="Regra Orçamentária">Regras Orçamentárias</option>
+            <option value="Meta Financeira">Metas & Estratégias</option>
+            <option value="Geral">Geral</option>
+          </select>
+
+          <button id="btn-toggle-fav-filter" onclick="toggleFavFilter()" class="px-3 py-2 bg-monotonal-950 border border-monotonal-800 rounded-xl text-xs text-monotonal-300 flex items-center gap-2 whitespace-nowrap">
+            <i class="fa-solid fa-star text-yellow-500"></i>
+            <span>Favoritos</span>
+          </button>
+
+          <button onclick="openAddNoteModal()" class="px-4 py-2 bg-monotonal-100 hover:bg-white text-monotonal-950 font-bold rounded-xl text-xs flex items-center gap-2 whitespace-nowrap shadow">
+            <i class="fa-solid fa-plus"></i> Nova Nota
+          </button>
+        </div>
+      </div>
+
+      <div id="brain-notes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      <div id="brain-empty-state" class="hidden text-center py-12 glass-card rounded-2xl border border-monotonal-800">
+        <p class="text-xs text-monotonal-400">Nenhuma nota cadastrada no momento.</p>
+      </div>
+    </section>
+
+    <!-- TAB 4: METAS & HÁBITOS -->
+    <section id="tab-habits" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-card rounded-2xl p-6 border border-monotonal-800 space-y-6">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-bullseye text-monotonal-400"></i> Metas Patrimoniais
+            </h2>
+            <button onclick="openAddGoalModal()" class="px-3 py-1.5 bg-monotonal-800 hover:bg-monotonal-700 text-white rounded-lg text-xs font-semibold border border-monotonal-700 transition">
+              <i class="fa-solid fa-plus"></i> Nova Meta
+            </button>
+          </div>
+          <div id="goals-list" class="space-y-4"></div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 border border-monotonal-800 space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-check-double text-monotonal-400"></i> Hábitos Diários
+              </h2>
+              <p class="text-[11px] text-monotonal-400 mt-0.5">Check-list de disciplina diária</p>
+            </div>
+            <button onclick="openAddHabitModal()" class="px-3 py-1.5 bg-monotonal-800 hover:bg-monotonal-700 text-white rounded-lg text-xs font-semibold border border-monotonal-700 transition">
+              <i class="fa-solid fa-plus"></i> Novo Hábito
+            </button>
+          </div>
+          <div id="habits-list" class="space-y-3"></div>
+          <div class="pt-4 border-t border-monotonal-800 flex justify-between items-center text-xs text-monotonal-400">
+            <button onclick="resetHabitsDaily()" class="hover:text-white underline">Desmarcar Todos</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODALS -->
+  <div id="modal-note" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card bg-monotonal-900 border border-monotonal-700 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-monotonal-800">
+        <h3 id="modal-note-title" class="text-sm font-bold text-white">Criar Nova Nota</h3>
+        <button onclick="closeModal('modal-note')" class="text-monotonal-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-note" onsubmit="handleSaveNote(event)" class="p-5 space-y-4">
+        <input type="hidden" id="note-id">
+        <div>
+          <label class="block text-[11px] font-semibold text-monotonal-400 uppercase mb-1">Título</label>
+          <input type="text" id="note-title-input" required class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-monotonal-400">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-monotonal-400 uppercase mb-1">Categoria</label>
+            <select id="note-category" class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none">
+              <option value="Tese de Investimento">Tese de Investimento</option>
+              <option value="Resumo de Livro">Resumo de Livro</option>
+              <option value="Regra Orçamentária">Regra Orçamentária</option>
+              <option value="Meta Financeira">Meta Financeira</option>
+              <option value="Geral">Geral</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-monotonal-400 uppercase mb-1">Tags (separadas por vírgula)</label>
+            <input type="text" id="note-tags" placeholder="ações, fiis, reserva" class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-semibold text-monotonal-400 uppercase mb-1">Conteúdo</label>
+          <textarea id="note-content" rows="5" required class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none"></textarea>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="note-fav" class="rounded border-monotonal-700 bg-monotonal-950 text-monotonal-100">
+          <label for="note-fav" class="text-xs text-monotonal-300">Favorito ⭐</label>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('modal-note')" class="px-4 py-2 bg-monotonal-800 hover:bg-monotonal-700 text-white rounded-xl text-xs">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-monotonal-100 hover:bg-white text-monotonal-950 font-bold rounded-xl text-xs">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-goal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card bg-monotonal-900 border border-monotonal-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-monotonal-800">
+        <h3 class="text-sm font-bold text-white">Adicionar Meta</h3>
+        <button onclick="closeModal('modal-goal')" class="text-monotonal-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-goal" onsubmit="handleSaveGoal(event)" class="p-5 space-y-4">
+        <div>
+          <label class="block text-[11px] font-semibold text-monotonal-400 uppercase mb-1">Título</label>
+          <input type="text" id="goal-title" required class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-monotonal-400 uppercase mb-1">Valor Atual</label>
+            <input type="number" step="0.01" min="0" id="goal-current" required class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2 text-xs text-white font-mono focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-monotonal-400 uppercase mb-1">Meta Total</label>
+            <input type="number" step="0.01" min="0.01" id="goal-target" required class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2 text-xs text-white font-mono focus:outline-none">
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('modal-goal')" class="px-4 py-2 bg-monotonal-800 hover:bg-monotonal-700 text-white rounded-xl text-xs">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-monotonal-100 hover:bg-white text-monotonal-950 font-bold rounded-xl text-xs">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-habit" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-card bg-monotonal-900 border border-monotonal-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-monotonal-800">
+        <h3 class="text-sm font-bold text-white">Novo Hábito</h3>
+        <button onclick="closeModal('modal-habit')" class="text-monotonal-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-habit" onsubmit="handleSaveHabit(event)" class="p-5 space-y-4">
+        <div>
+          <label class="block text-[11px] font-semibold text-monotonal-400 uppercase mb-1">Descrição do Hábito</label>
+          <input type="text" id="habit-title" required class="w-full bg-monotonal-950 border border-monotonal-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none">
+        </div>
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeModal('modal-habit')" class="px-4 py-2 bg-monotonal-800 hover:bg-monotonal-700 text-white rounded-xl text-xs">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-monotonal-100 hover:bg-white text-monotonal-950 font-bold rounded-xl text-xs">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APP LOGIC -->
+  <script>
+    const STORAGE_KEY = 'GH_PAGES_SECOND_BRAIN_FINANCE_DATA';
+
+    let appState = {
+      transactions: [],
+      notes: [],
+      goals: [],
+      habits: [],
+      filterOnlyFavs: false
+    };
+
+    const defaultData = {
+      transactions: [
+        { id: '1', description: 'Rendimento Principal', amount: 5000.00, type: 'income', category: 'Investimento', date: '2026-11-01' },
+        { id: '2', description: 'Aporte Carteira de Ações', amount: 1500.00, type: 'expense', category: 'Investimento', date: '2026-11-02' },
+        { id: '3', description: 'Supermercado', amount: 720.00, type: 'expense', category: 'Alimentação', date: '2026-11-03' }
+      ],
+      notes: [
+        { id: '101', title: 'Regra dos 20% para Aportes Frequentes', category: 'Regra Orçamentária', tags: ['investimento', 'reserva'], content: 'Direcionar no mínimo 20% de toda entrada de capital imediatamente para aportes de longo prazo.', favorite: true, date: '2026-11-01' }
+      ],
+      goals: [
+        { id: '201', title: 'Reserva de Emergência', current: 12000.00, target: 20000.00 }
+      ],
+      habits: [
+        { id: '301', title: 'Anotar todos os gastos do dia', completed: false },
+        { id: '302', title: 'Conferir o saldo da conta corrente', completed: true }
+      ]
+    };
+
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try { appState = JSON.parse(saved); } catch (e) { appState = JSON.parse(JSON.stringify(defaultData)); }
+      } else {
+        appState = JSON.parse(JSON.stringify(defaultData));
+        saveState();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      renderApp();
+    }
+
+    function formatCurrency(val) {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const [year, month, day] = dateStr.split('-');
+      return `${day}/${month}/${year}`;
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(el => {
+        el.classList.remove('bg-monotonal-800', 'text-white', 'border', 'border-monotonal-700');
+        el.classList.add('text-monotonal-400');
+      });
+
+      const activeContent = document.getElementById(`tab-${tabId}`);
+      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+      if (activeContent && activeBtn) {
+        activeContent.classList.remove('hidden');
+        activeBtn.classList.add('bg-monotonal-800', 'text-white', 'border', 'border-monotonal-700');
+        activeBtn.classList.remove('text-monotonal-400');
+      }
+    }
+
+    function calculateMetrics() {
+      let income = 0, expenses = 0;
+      appState.transactions.forEach(t => {
+        if (t.type === 'income') income += Number(t.amount);
+        else if (t.type === 'expense') expenses += Number(t.amount);
+      });
+      const balance = income - expenses;
+      const savingsRate = income > 0 ? Math.max(0, ((income - expenses) / income) * 100) : 0;
+      return { income, expenses, balance, savingsRate };
+    }
+
+    function renderApp() {
+      renderDashboardTab();
+      renderFinanceTab();
+      renderBrainTab();
+      renderHabitsTab();
+    }
+
+    function renderDashboardTab() {
+      const { income, expenses, balance, savingsRate } = calculateMetrics();
+      document.getElementById('dash-income').textContent = formatCurrency(income);
+      document.getElementById('dash-expenses').textContent = formatCurrency(expenses);
+      document.getElementById('dash-balance').textContent = formatCurrency(balance);
+      document.getElementById('dash-savings-rate').textContent = `${savingsRate.toFixed(1)}%`;
+
+      const categoryTotals = {};
+      appState.transactions.filter(t => t.type === 'expense').forEach(t => {
+        categoryTotals[t.category] = (categoryTotals[t.category] || 0) + Number(t.amount);
+      });
+
+      const container = document.getElementById('dash-category-progress');
+      container.innerHTML = '';
+      const categories = ['Investimento', 'Conta Fixa', 'Alimentação', 'Lazer', 'Outros'];
+      categories.forEach(cat => {
+        const val = categoryTotals[cat] || 0;
+        const pct = expenses > 0 ? (val / expenses) * 100 : 0;
+        if (val > 0) {
+          container.innerHTML += `
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-monotonal-300">${cat}</span>
+                <span class="font-mono text-monotonal-400">${formatCurrency(val)} (${pct.toFixed(0)}%)</span>
+              </div>
+              <div class="w-full h-2 bg-monotonal-950 rounded-full overflow-hidden border border-monotonal-800">
+                <div class="h-full bg-monotonal-200 rounded-full" style="width: ${pct}%"></div>
+              </div>
+            </div>`;
+        }
+      });
+
+      const recentNotesContainer = document.getElementById('dash-recent-notes');
+      recentNotesContainer.innerHTML = '';
+      const recent = [...appState.notes].reverse().slice(0, 2);
+      recent.forEach(note => {
+        recentNotesContainer.innerHTML += `
+          <div class="p-4 rounded-xl bg-monotonal-950/60 border border-monotonal-800 space-y-2">
+            <div class="flex items-center justify-between text-[10px] text-monotonal-400">
+              <span class="px-2 py-0.5 rounded bg-monotonal-800 text-monotonal-300 font-mono">${note.category}</span>
+              <span>${formatDate(note.date)}</span>
+            </div>
+            <h4 class="text-xs font-bold text-white line-clamp-1">${note.title}</h4>
+            <p class="text-[11px] text-monotonal-400 line-clamp-2">${note.content}</p>
+          </div>`;
+      });
+
+      const goalsSummaryContainer = document.getElementById('dash-goals-summary');
+      goalsSummaryContainer.innerHTML = '';
+      appState.goals.forEach(goal => {
+        const pct = Math.min(100, (goal.current / goal.target) * 100);
+        goalsSummaryContainer.innerHTML += `
+          <div class="space-y-1">
+            <div class="flex justify-between text-xs">
+              <span class="text-monotonal-300">${goal.title}</span>
+              <span class="font-mono text-monotonal-400">${formatCurrency(goal.current)} / ${formatCurrency(goal.target)}</span>
+            </div>
+            <div class="w-full h-2 bg-monotonal-950 rounded-full overflow-hidden border border-monotonal-800">
+              <div class="h-full bg-emerald-500 rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>`;
+      });
+    }
+
+    function renderFinanceTab() {
+      const catFilter = document.getElementById('filter-tx-category').value;
+      const typeFilter = document.getElementById('filter-tx-type').value;
+
+      const filtered = appState.transactions.filter(t => {
+        const matchesCat = (catFilter === 'ALL' || t.category === catFilter);
+        const matchesType = (typeFilter === 'ALL' || t.type === typeFilter);
+        return matchesCat && matchesType;
+      });
+
+      const tbody = document.getElementById('tx-table-body');
+      tbody.innerHTML = '';
+      document.getElementById('tx-empty-state').classList.toggle('hidden', filtered.length > 0);
+
+      [...filtered].reverse().forEach(t => {
+        const isIncome = t.type === 'income';
+        tbody.innerHTML += `
+          <tr class="hover:bg-monotonal-900/40 transition">
+            <td class="py-3 px-4 text-monotonal-400">${formatDate(t.date)}</td>
+            <td class="py-3 px-4 text-white font-sans">${t.description}</td>
+            <td class="py-3 px-4 text-monotonal-300">${t.category}</td>
+            <td class="py-3 px-4">${isIncome ? '<span class="text-emerald-400">Entrada</span>' : '<span class="text-rose-400">Saída</span>'}</td>
+            <td class="py-3 px-4 text-right font-bold ${isIncome ? 'text-emerald-400' : 'text-monotonal-200'}">${isIncome ? '+' : '-'} ${formatCurrency(t.amount)}</td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="deleteTransaction('${t.id}')" class="text-monotonal-500 hover:text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>`;
+      });
+
+      const totalExpenses = appState.transactions.filter(t => t.type === 'expense').reduce((acc, curr) => acc + Number(curr.amount), 0);
+      document.getElementById('tx-total-expenses-label').textContent = `Total: ${formatCurrency(totalExpenses)}`;
+
+      const categoryTotals = {};
+      appState.transactions.filter(t => t.type === 'expense').forEach(t => {
+        categoryTotals[t.category] = (categoryTotals[t.category] || 0) + Number(t.amount);
+      });
+
+      const barsContainer = document.getElementById('finance-category-bars');
+      barsContainer.innerHTML = '';
+      ['Investimento', 'Conta Fixa', 'Alimentação', 'Lazer', 'Outros'].forEach(cat => {
+        const val = categoryTotals[cat] || 0;
+        const pct = totalExpenses > 0 ? (val / totalExpenses) * 100 : 0;
+        barsContainer.innerHTML += `
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-monotonal-200">${cat}</span>
+              <span class="font-mono text-monotonal-400">${formatCurrency(val)} (${pct.toFixed(1)}%)</span>
+            </div>
+            <div class="w-full h-2 bg-monotonal-950 rounded-full overflow-hidden border border-monotonal-800">
+              <div class="h-full bg-monotonal-200 rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>`;
+      });
+    }
+
+    function renderBrainTab() {
+      const searchTerm = document.getElementById('brain-search').value.toLowerCase();
+      const catFilter = document.getElementById('brain-filter-category').value;
+      const favOnly = appState.filterOnlyFavs;
+
+      const filteredNotes = appState.notes.filter(n => {
+        const matchesSearch = n.title.toLowerCase().includes(searchTerm) || 
+                              n.content.toLowerCase().includes(searchTerm) || 
+                              (n.tags && n.tags.some(t => t.toLowerCase().includes(searchTerm)));
+        const matchesCat = (catFilter === 'ALL' || n.category === catFilter);
+        const matchesFav = !favOnly || n.favorite;
+        return matchesSearch && matchesCat && matchesFav;
+      });
+
+      const grid = document.getElementById('brain-notes-grid');
+      grid.innerHTML = '';
+      document.getElementById('brain-empty-state').classList.toggle('hidden', filteredNotes.length > 0);
+
+      [...filteredNotes].reverse().forEach(note => {
+        const tagsHtml = note.tags ? note.tags.map(t => `<span class="px-2 py-0.5 rounded bg-monotonal-800 text-monotonal-400 text-[10px] font-mono">#${t.trim()}</span>`).join(' ') : '';
+        grid.innerHTML += `
+          <div class="glass-card rounded-2xl p-5 border border-monotonal-800 flex flex-col justify-between space-y-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="px-2 py-0.5 rounded bg-monotonal-800 border border-monotonal-700 text-monotonal-300 text-[10px] font-mono">${note.category}</span>
+                <div class="flex items-center space-x-2">
+                  <button onclick="toggleFavNote('${note.id}')" class="text-xs ${note.favorite ? 'text-yellow-400' : 'text-monotonal-600 hover:text-yellow-400'}"><i class="fa-solid fa-star"></i></button>
+                  <button onclick="editNote('${note.id}')" class="text-xs text-monotonal-500 hover:text-white"><i class="fa-solid fa-pen-to-square"></i></button>
+                  <button onclick="deleteNote('${note.id}')" class="text-xs text-monotonal-500 hover:text-rose-400"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+              <h3 class="text-sm font-bold text-white">${note.title}</h3>
+              <p class="text-xs text-monotonal-300 leading-relaxed whitespace-pre-line">${note.content}</p>
+            </div>
+            <div class="pt-3 border-t border-monotonal-800 flex items-center justify-between">
+              <div class="flex flex-wrap gap-1">${tagsHtml}</div>
+              <span class="text-[10px] font-mono text-monotonal-500">${formatDate(note.date)}</span>
+            </div>
+          </div>`;
+      });
+    }
+
+    function renderHabitsTab() {
+      const goalsList = document.getElementById('goals-list');
+      goalsList.innerHTML = '';
+      appState.goals.forEach(goal => {
+        const pct = Math.min(100, (goal.current / goal.target) * 100);
+        goalsList.innerHTML += `
+          <div class="p-4 rounded-xl bg-monotonal-950/60 border border-monotonal-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold text-white">${goal.title}</h4>
+              <div class="flex items-center space-x-2">
+                <button onclick="updateGoalProgress('${goal.id}')" class="text-[11px] text-monotonal-400 hover:text-emerald-400 underline">Atualizar</button>
+                <button onclick="deleteGoal('${goal.id}')" class="text-xs text-monotonal-500 hover:text-rose-400 p-1"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-mono">
+                <span class="text-monotonal-400">${formatCurrency(goal.current)}</span>
+                <span class="text-white font-bold">${pct.toFixed(1)}% / ${formatCurrency(goal.target)}</span>
+              </div>
+              <div class="w-full h-2 bg-monotonal-950 rounded-full overflow-hidden border border-monotonal-800">
+                <div class="h-full bg-emerald-500 rounded-full" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          </div>`;
+      });
+
+      const habitsList = document.getElementById('habits-list');
+      habitsList.innerHTML = '';
+      appState.habits.forEach(habit => {
+        habitsList.innerHTML += `
+          <div class="p-3 rounded-xl bg-monotonal-950/60 border border-monotonal-800 flex items-center justify-between">
+            <label class="flex items-center space-x-3 cursor-pointer">
+              <input type="checkbox" ${habit.completed ? 'checked' : ''} onchange="toggleHabit('${habit.id}')" class="w-4 h-4 rounded border-monotonal-700 bg-monotonal-950 text-emerald-500 focus:ring-0">
+              <span class="text-xs ${habit.completed ? 'line-through text-monotonal-500' : 'text-monotonal-200'}">${habit.title}</span>
+            </label>
+            <button onclick="deleteHabit('${habit.id}')" class="text-monotonal-600 hover:text-rose-400 text-xs"><i class="fa-solid fa-trash"></i></button>
+          </div>`;
+      });
+    }
+
+    // HANDLERS & ACTIONS
+    function handleAddTransaction(e) {
+      e.preventDefault();
+      const desc = document.getElementById('tx-description').value;
+      const amount = parseFloat(document.getElementById('tx-amount').value);
+      const type = document.getElementById('tx-type').value;
+      const category = document.getElementById('tx-category').value;
+      const date = document.getElementById('tx-date').value;
+
+      if (!desc || isNaN(amount) || !date) return;
+
+      appState.transactions.push({ id: Date.now().toString(), description: desc, amount, type, category, date });
+      saveState();
+      document.getElementById('form-transaction').reset();
+      document.getElementById('tx-date').valueAsDate = new Date();
+    }
+
+    function deleteTransaction(id) {
+      appState.transactions = appState.transactions.filter(t => t.id !== id);
+      saveState();
+    }
+
+    function openAddNoteModal() {
+      document.getElementById('modal-note-title').textContent = 'Criar Nova Nota';
+      document.getElementById('form-note').reset();
+      document.getElementById('note-id').value = '';
+      document.getElementById('modal-note').classList.remove('hidden');
+    }
+
+    function editNote(id) {
+      const note = appState.notes.find(n => n.id === id);
+      if (!note) return;
+      document.getElementById('modal-note-title').textContent = 'Editar Nota';
+      document.getElementById('note-id').value = note.id;
+      document.getElementById('note-title-input').value = note.title;
+      document.getElementById('note-category').value = note.category;
+      document.getElementById('note-tags').value = note.tags ? note.tags.join(', ') : '';
+      document.getElementById('note-content').value = note.content;
+      document.getElementById('note-fav').checked = !!note.favorite;
+      document.getElementById('modal-note').classList.remove('hidden');
+    }
+
+    function handleSaveNote(e) {
+      e.preventDefault();
+      const id = document.getElementById('note-id').value;
+      const title = document.getElementById('note-title-input').value;
+      const category = document.getElementById('note-category').value;
+      const tagsRaw = document.getElementById('note-tags').value;
+      const content = document.getElementById('note-content').value;
+      const favorite = document.getElementById('note-fav').checked;
+
+      const tags = tagsRaw.split(',').map(t => t.trim()).filter(t => t.length > 0);
+
+      if (id) {
+        const note = appState.notes.find(n => n.id === id);
+        if (note) {
+          note.title = title;
+          note.category = category;
+          note.tags = tags;
+          note.content = content;
+          note.favorite = favorite;
+        }
+      } else {
+        appState.notes.push({
+          id: Date.now().toString(), title, category, tags, content, favorite,
+          date: new Date().toISOString().split('T')[0]
+        });
+      }
+      saveState();
+      closeModal('modal-note');
+    }
+
+    function deleteNote(id) {
+      appState.notes = appState.notes.filter(n => n.id !== id);
+      saveState();
+    }
+
+    function toggleFavNote(id) {
+      const note = appState.notes.find(n => n.id === id);
+      if (note) {
+        note.favorite = !note.favorite;
+        saveState();
+      }
+    }
+
+    function toggleFavFilter() {
+      appState.filterOnlyFavs = !appState.filterOnlyFavs;
+      document.getElementById('btn-toggle-fav-filter').classList.toggle('text-yellow-400', appState.filterOnlyFavs);
+      renderBrainTab();
+    }
+
+    function openAddGoalModal() {
+      document.getElementById('form-goal').reset();
+      document.getElementById('modal-goal').classList.remove('hidden');
+    }
+
+    function handleSaveGoal(e) {
+      e.preventDefault();
+      const title = document.getElementById('goal-title').value;
+      const current = parseFloat(document.getElementById('goal-current').value) || 0;
+      const target = parseFloat(document.getElementById('goal-target').value);
+      if (!title || isNaN(target)) return;
+      appState.goals.push({ id: Date.now().toString(), title, current, target });
+      saveState();
+      closeModal('modal-goal');
+    }
+
+    function updateGoalProgress(id) {
+      const goal = appState.goals.find(g => g.id === id);
+      if (!goal) return;
+      const newVal = prompt(`Atualizar valor de "${goal.title}":`, goal.current);
+      if (newVal !== null && !isNaN(parseFloat(newVal))) {
+        goal.current = parseFloat(newVal);
+        saveState();
+      }
+    }
+
+    function deleteGoal(id) {
+      appState.goals = appState.goals.filter(g => g.id !== id);
+      saveState();
+    }
+
+    function openAddHabitModal() {
+      document.getElementById('form-habit').reset();
+      document.getElementById('modal-habit').classList.remove('hidden');
+    }
+
+    function handleSaveHabit(e) {
+      e.preventDefault();
+      const title = document.getElementById('habit-title').value;
+      if (!title) return;
+      appState.habits.push({ id: Date.now().toString(), title, completed: false });
+      saveState();
+      closeModal('modal-habit');
+    }
+
+    function toggleHabit(id) {
+      const habit = appState.habits.find(h => h.id === id);
+      if (habit) {
+        habit.completed = !habit.completed;
+        saveState();
+      }
+    }
+
+    function deleteHabit(id) {
+      appState.habits = appState.habits.filter(h => h.id !== id);
+      saveState();
+    }
+
+    function resetHabitsDaily() {
+      appState.habits.forEach(h => h.completed = false);
+      saveState();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function exportData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `segundo_cerebro_backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported.transactions && imported.notes) {
+            appState = imported;
+            saveState();
+            alert('Dados importados com sucesso!');
+          }
+        } catch (err) { alert('Ficheiro inválido.'); }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetData() {
+      if (confirm('Deseja redefinir os dados para o padrão?')) {
+        appState = JSON.parse(JSON.stringify(defaultData));
+        saveState();
+      }
+    }
+
+    window.onload = function() {
+      loadState();
+      const dateInput = document.getElementById('tx-date');
+      if (dateInput) dateInput.valueAsDate = new Date();
+      renderApp();
+    };
+  </script>
+</body>
+</html>
